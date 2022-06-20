@@ -1,0 +1,36 @@
+version: "3.3"
+services:
+  api:
+    build: ./go
+    ports:
+      - "8080:8080"
+    networks:
+      - api
+    depends_on: 
+      - db
+    environment:
+      MYSQL_DATABASE: db_dev
+      MYSQL_USER: dev  
+      MYSQL_PASSWORD: dev
+      MYSQL_ROOT_PASSWORD: dev
+    volumes:
+      - type: bind
+        source: ./go/src
+        target: /go/src
+  db:
+    container_name: db
+    build: ./mysql
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: db_dev
+      MYSQL_USER: dev  
+      MYSQL_PASSWORD: dev
+      MYSQL_ROOT_PASSWORD: dev
+    networks:
+      - api
+
+networks:
+  api:
