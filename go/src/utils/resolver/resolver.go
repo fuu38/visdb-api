@@ -12,8 +12,10 @@ type Item struct {
 	Ans2 string
 	Ans3 string
 }
-type showAllResponce struct {
-	Items []Item `json:"items"`
+
+type responce struct {
+	Status string      `json:"status"`
+	Result interface{} `json:"result"`
 }
 
 func init() {
@@ -23,7 +25,10 @@ func init() {
 func ShowAll(w http.ResponseWriter, r *http.Request) {
 	var items []Item
 	db.Db.Find(&items)
-	d := showAllResponce{Items: items}
+	d := responce{
+		Status: "OK",
+		Result: items,
+	}
 	res, err := json.Marshal(d)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -41,7 +46,17 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 		}
 		db.Db.Create(&item)
 	}
-	w.WriteHeader(200)
+
+	d := responce{
+		Status: "OK",
+		Result: nil,
+	}
+	res, err := json.Marshal(d)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Write(res)
 }
 
 func Show(w http.ResponseWriter, r *http.Request) {
